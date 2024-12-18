@@ -2,7 +2,6 @@ import time
 
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.io import loadmat
 from scipy.signal import convolve2d
 from scipy.fft import fft2, fftshift, ifft2
 
@@ -12,7 +11,7 @@ from utils import add_square_around_zoom
 # CONVOLUTION 1D
 ##################
 
-piece_regular = np.squeeze(loadmat("piece-regular.mat")['x0'])
+piece_regular = np.load('piece-regular.npy')
 
 plt.plot(piece_regular)
 plt.show()
@@ -36,7 +35,9 @@ plt.plot(moy50, label='Resultat moy 50')
 plt.legend(loc='upper right')
 plt.show()
 
-# np a l'air de ne pas inverser le filtre. On obtient -dérivée. Je mets -filtre
+# La dérivée de f(x) à la coordonnée x=x0 s'approxime par
+# df(x=x0) = f(x0 + 1)/2 - f(x0 - 1)/2. Puisque la convolution
+# inverse les éléments du filtre, on passe le filtre [1/2, 0, -1/2].
 deriv = np.convolve(piece_regular, [1 / 2, 0, -1 / 2])
 _, axs = plt.subplots(2, 1)
 axs[0].plot(piece_regular)
@@ -50,7 +51,7 @@ plt.show()
 ##################
 
 # Loading Lena
-lena = loadmat("lena.mat")['lena']
+lena = np.load("lena_float.npy")
 plt.imshow(lena, cmap='gray')
 plt.show()
 print("Résolution: {}".format(lena.shape))
@@ -114,7 +115,7 @@ axs[1].set_title('Gradient centré, axe y')
 plt.show()
 
 
-# Exemple 4 : Convolution avec un filtre très gros. Juste un peu plus petit que Lena.
+# Exemple 4 : Convolution avec un filtre très gros. Mêmes dimensions que Lena.
 filtre_g = np.zeros((512, 512))
 filtre_g[246: 267, 246: 267] = np.ones((21, 21))
 plt.figure()
